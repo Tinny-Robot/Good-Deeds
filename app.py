@@ -44,13 +44,13 @@ class ImageFrameWithMenuApp:
         menu1 = Menu(menubar, tearoff=0)
         menu1.add_command(label="LOG IN", command=self.menu1_option1)
         menu1.add_command(label="SIGN UP", command=self.menu1_option2)
-        menubar.add_cascade(label="Medical Official", menu=menu1)
+        menubar.add_cascade(label="Patient", menu=menu1)
 
         # Second menu button
         menu2 = Menu(menubar, tearoff=0)
         menu2.add_command(label="LOG IN", command=self.menu2_option1)
         menu2.add_command(label="SIGN UP", command=self.menu2_option2)
-        menubar.add_cascade(label="Patient", menu=menu2)
+        menubar.add_cascade(label="Medical Official", menu=menu2)
 
         # Change menu bar position to top-right
         self.root.config(menu=menubar)
@@ -80,7 +80,7 @@ class ImageFrameWithMenuApp:
         
 
     def user_login(self, username,password ):
-        print(username.get(), password.get())
+        # print(username.get(), password.get())
         data = []
         with open("users.csv", "r+", newline="") as csvfile:
             file = csv.reader(csvfile)
@@ -90,24 +90,23 @@ class ImageFrameWithMenuApp:
         for i in data:
             if i[0] == username.get() and i[1] == password.get():
                 self.destroy(self.frame)
-                print(i)
                 break
         else:
-            messagebox.showerror('error', 'rest')
+            messagebox.showerror('Login Error', 'Incorrect Details')
 
 
 
     def user_signup(self, username,password ):
-        print(username.get(), password.get())
+        # print(username.get(), password.get())
         data = []
         with open("users.csv", "r+", newline="") as csvfile:
             file = csv.reader(csvfile)
             for i in file:
                 data.append(i)
-        print(data)
+        # print(data)
 
         for i in data:
-            print(i)
+            # print(i)
             if i[0] == username.get():
                 messagebox.showerror("Error", "User Already Exist")
                 return 0
@@ -125,7 +124,7 @@ class ImageFrameWithMenuApp:
         return
     
     def doc_login(self, username,password ):
-        print(username.get(), password.get())
+        # print(username.get(), password.get())
         data = []
         with open("users.csv", "r+", newline="") as csvfile:
             file = csv.reader(csvfile)
@@ -134,11 +133,17 @@ class ImageFrameWithMenuApp:
         # data.append([username.get(), password.get(), False])
         for i in data:
             if i[0] == username.get() and i[1] == password.get():
+                # print(i[0])
+                if i[-1] != "True":
+                    messagebox.showerror('Login Error', 'Incorrect Details')
+                    return
+                
+                self.destroy(self.frame)
                 messagebox.showinfo('yes', 'Login')
-                print(i)
+                # print(i)
                 break
         else:
-            messagebox.showerror('error', 'rest')
+            messagebox.showerror('Login Error', 'Incorrect Details')
 
 
 
@@ -149,15 +154,15 @@ class ImageFrameWithMenuApp:
             file = csv.reader(csvfile)
             for i in file:
                 data.append(i)
-        print(data)
+        # print(data)
 
         for i in data:
-            print(i)
+            # print(i)
             if i[0] == username.get():
                 messagebox.showerror("Error", "User Already Exist")
                 return 0
             
-        data.append([username.get(), password.get(), False])
+        data.append([username.get(), password.get(), True])
         
         with open("users.csv", "r+", newline="") as csvfile:
             file = csv.writer(csvfile)
@@ -165,7 +170,7 @@ class ImageFrameWithMenuApp:
                 file.writerow(i)
         
         messagebox.showinfo('Success', 'Successfull created account')
-        self.user_login(username, password)
+        self.doc_login(username, password)
 
         return
 

@@ -37,14 +37,18 @@ def update_table():
     for col, header in enumerate(headers):
         tk.Label(table_frame, text=header, bg="lightgray", relief=tk.RIDGE, width=20).grid(row=0, column=col, sticky="nsew")
 
-    # Create the table rows
-    for row, (review, datetime) in enumerate(table_data, start=1):
-        tk.Label(table_frame, text=review, bg="white", relief=tk.RIDGE, width=20).grid(row=row, column=0, sticky="nsew")
-        tk.Label(table_frame, text=datetime, bg="white", relief=tk.RIDGE, width=20).grid(row=row, column=1, sticky="nsew")
-        review_button = tk.Button(table_frame, text="Review", command=lambda r=row: on_review_button_click(r))
-        review_button.grid(row=row, column=2, sticky="nsew")
-        edit_button = tk.Button(table_frame, text="Edit", command=lambda r=row: on_edit_button_click(r))
-        edit_button.grid(row=row, column=3, sticky="nsew")
+    if table_data:
+        # Create the table rows
+        for row, (review, datetime) in enumerate(table_data, start=1):
+            tk.Label(table_frame, text=review, bg="white", relief=tk.RIDGE, width=20).grid(row=row, column=0, sticky="nsew")
+            tk.Label(table_frame, text=datetime, bg="white", relief=tk.RIDGE, width=20).grid(row=row, column=1, sticky="nsew")
+            review_button = tk.Button(table_frame, text="Review", command=lambda r=row: on_review_button_click(r))
+            review_button.grid(row=row, column=2, sticky="nsew")
+            edit_button = tk.Button(table_frame, text="Edit", command=lambda r=row: on_edit_button_click(r))
+            edit_button.grid(row=row, column=3, sticky="nsew")
+    else:
+        tk.Label(table_frame, text="No Entry yet", bg="white",).grid(sticky="nsew")
+
 
     # Add the "Add Row" button at the end of the table
     add_row_button = tk.Button(table_frame, text="Add Row", command=on_add_row_button_click)
@@ -52,10 +56,7 @@ def update_table():
 
 # Sample data for the table (replace this with your actual data)
 table_data = [
-    ["Review 1", "2023-07-25 10:00:00"],
-    ["Review 2", "2023-07-25 11:30:00"],
-    ["Review 3", "2023-07-25 15:45:00"],
-    # Add more rows as needed
+        # Add more rows as needed
 ]
 
 # Create the main application window
