@@ -47,7 +47,7 @@ def update_table():
             edit_button = tk.Button(table_frame, text="Edit", command=lambda r=row: on_edit_button_click(r))
             edit_button.grid(row=row, column=3, sticky="nsew")
     else:
-        tk.Label(table_frame, text="No Entry yet", bg="white",).grid(sticky="nsew")
+        tk.Label(table_frame, text="No Entry yet", bg="white", fg="red").grid(sticky="nsew")
 
 
     # Add the "Add Row" button at the end of the table

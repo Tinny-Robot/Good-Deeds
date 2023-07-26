@@ -1,85 +1,113 @@
 import tkinter as tk
-from tkinter import simpledialog
-from tkinter import messagebox
-from tkinter import PhotoImage
-from PIL import Image, ImageTk
+from tkinter import ttk
 
-def on_review_button_click(row):
-    result = simpledialog.askstring("Review", "Yes or No?", parent=table_frame)
-    if result:
-        # Do something with the result, e.g., update the table data
-        # For now, we'll just print the result for demonstration purposes
-        print(f"Review for row {row}: {result}")
+def submit_form():
+    # Gather the form data and process it as needed
+    name = name_entry.get()
+    age = age_entry.get()
+    gender = gender_var.get()
+    # ... Process other form data here ...
 
-def on_edit_button_click(row):
-    # Implement the action you want when the Edit button is clicked
-    # For now, we'll just print a message for demonstration purposes
-    print(f"Edit row {row}")
+    # For demonstration purposes, let's print the data to the console
+    print("Name:", name)
+    print("Age:", age)
+    print("Gender:", gender)
+    # ... Print other form data here ...
 
-def on_add_row_button_click():
-    # Add a new row to the table
-    # For now, we'll add a placeholder data for demonstration purposes
-    new_row_data = ["New Review", "2023-07-25 18:00:00"]
-    table_data.append(new_row_data)
-    update_table()
+    # You can add further processing or validation here as needed
 
-def update_table():
-    global add_row_button 
-    # Clear the existing table
-    for widget in table_frame.winfo_children():
-        widget.grid_forget()
-
-    # Create the table headers
-    headers = ["Review", "Date and Time", "Edit"]
-    for col, header in enumerate(headers):
-        tk.Label(table_frame, text=header, bg="lightgray", relief=tk.RIDGE, width=20).grid(row=0, column=col, sticky="nsew")
-
-    # Create the table rows
-    for row, (review, datetime) in enumerate(table_data, start=1):
-        tk.Label(table_frame, text=review, bg="white", relief=tk.RIDGE, width=20).grid(row=row, column=0, sticky="nsew")
-        tk.Label(table_frame, text=datetime, bg="white", relief=tk.RIDGE, width=20).grid(row=row, column=1, sticky="nsew")
-        review_button = tk.Button(table_frame, text="Review", command=lambda r=row: on_review_button_click(r))
-        review_button.grid(row=row, column=2, sticky="nsew")
-        edit_button = tk.Button(table_frame, text="Edit", command=lambda r=row: on_edit_button_click(r))
-        edit_button.grid(row=row, column=3, sticky="nsew")
-
-    # Add the "Add Row" button at the end of the table
-    add_row_button.grid(row=len(table_data) + 1, column=0, columnspan=4, pady=(10, 0))
-
-# Sample data for the table (replace this with your actual data)
-table_data = [
-    ["Review 1", "2023-07-25 10:00:00"],
-    ["Review 2", "2023-07-25 11:30:00"],
-    ["Review 3", "2023-07-25 15:45:00"],
-    # Add more rows as needed
-]
+    # Optionally, you could reset the form fields after submission
+    name_entry.delete(0, tk.END)
+    age_entry.delete(0, tk.END)
+    gender_var.set('')
+    duration_var.set(0)
 
 # Create the main application window
 root = tk.Tk()
-root.title("Table GUI with Image Background")
+root.title("Diagnostic Form")
 
-# Load the background image
-background_image = Image.open("pathtoframe-background.jpg")  # Replace with your image path
-background_photo = ImageTk.PhotoImage(background_image)
+# Create a canvas and a scrollbar for the form
+canvas = tk.Canvas(root)
+canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-# Create a label to display the background image
-background_label = tk.Label(root, image=background_photo)
-background_label.place(x=0, y=0, relwidth=1, relheight=1)
+scrollbar = ttk.Scrollbar(root, command=canvas.yview)
+scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-# Create a frame to hold the table
-table_frame = tk.Frame(root, bg="white")
-table_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+canvas.configure(yscrollcommand=scrollbar.set)
+canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
-# Create the table
-update_table()
+# Create a frame inside the canvas to hold the form elements
+form_frame = tk.Frame(canvas)
+canvas.create_window((0, 0), window=form_frame, anchor="nw")
 
-# Add the "Add Row" button
-def add_row_button():
-  add_row_button = tk.Button(table_frame, text="Add Row", command=on_add_row_button_click)
+# Patient Information
+tk.Label(form_frame, text="Name:").grid(row=0, column=0, sticky="e")
+name_entry = tk.Entry(form_frame)
+name_entry.grid(row=0, column=1, pady=5)
 
-# Adjust row and column weights to make the table expandable
-for i in range(4):
-    table_frame.grid_columnconfigure(i, weight=1)
-table_frame.grid_rowconfigure(0, weight=1)
+tk.Label(form_frame, text="Age:").grid(row=1, column=0, sticky="e")
+age_entry = tk.Entry(form_frame)
+age_entry.grid(row=1, column=1, pady=5)
 
+tk.Label(form_frame, text="Gender:").grid(row=2, column=0, sticky="e")
+gender_var = tk.StringVar()
+gender_choices = ["Male", "Female", "Other"]
+gender_dropdown = tk.OptionMenu(form_frame, gender_var, *gender_choices)
+gender_dropdown.grid(row=2, column=1, pady=5)
+
+# Symptoms
+symptoms_frame = tk.Frame(form_frame)
+symptoms_frame.grid(row=3, columnspan=2, pady=10)
+
+tk.Label(symptoms_frame, text="Symptoms:").pack()
+
+symptoms = ["Fever", "Cough", "Shortness of breath", "Fatigue", "Headache",
+            "Muscle aches", "Sore throat", "Nausea or vomiting", "Diarrhea", "Rash"]
+symptom_vars = []
+for i, symptom in enumerate(symptoms):
+    var = tk.IntVar()
+    tk.Checkbutton(symptoms_frame, text=symptom, variable=var).pack(anchor="w")
+    symptom_vars.append(var)
+
+# Duration (progress bar)
+duration_frame = tk.Frame(form_frame)
+duration_frame.grid(row=4, columnspan=2, pady=10)
+
+tk.Label(duration_frame, text="Duration:").pack()
+duration_var = tk.DoubleVar()
+duration_progress = ttk.Progressbar(duration_frame, variable=duration_var, maximum=100)
+duration_progress.pack(fill=tk.X)
+
+# Exposure (textarea)
+exposure_frame = tk.Frame(form_frame)
+exposure_frame.grid(row=5, columnspan=2, pady=10)
+
+tk.Label(exposure_frame, text="Exposure:").pack()
+exposure_text = tk.Text(exposure_frame, height=5, width=40)
+exposure_text.pack()
+
+# Medical Background
+tk.Label(form_frame, text="Medical Background:").grid(row=6, columnspan=2, pady=5)
+medical_background_text = tk.Text(form_frame, height=5, width=40)
+medical_background_text.grid(row=7, columnspan=2, pady=5)
+
+# Additional Notes
+tk.Label(form_frame, text="Additional Notes:").grid(row=8, columnspan=2, pady=5)
+additional_notes_text = tk.Text(form_frame, height=5, width=40)
+additional_notes_text.grid(row=9, columnspan=2, pady=5)
+
+# Doctors Comment
+tk.Label(form_frame, text="Doctor's Comment:").grid(row=10, columnspan=2, pady=5)
+doctors_comment_text = tk.Text(form_frame, height=5, width=40)
+doctors_comment_text.grid(row=11, columnspan=2, pady=5)
+
+# Submit Button
+submit_button = tk.Button(form_frame, text="Submit", command=submit_form)
+submit_button.grid(row=12, columnspan=2, pady=10)
+
+# Update the canvas scroll region when the form_frame size changes
+form_frame.update_idletasks()
+canvas.config(scrollregion=canvas.bbox("all"))
+
+# Run the application
 root.mainloop()
